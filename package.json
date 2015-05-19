@@ -1,0 +1,24 @@
+{
+    "name": "@cisl/logger",
+    "version": "1.0.0",
+    "description": "Logging function that prints time-stamped strings or JSON objects to the console.",
+    "main": "logger.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": {
+        "name": "Matthew Peveler",
+        "email": "pevelm@rpi.edu"
+    },
+    "dependencies": {
+        "winston": "^3.1.0",
+        "winston-mongodb": "^4.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://internal.cisl.rpi.edu/code/libraries/CELIO"
+    },
+    "publishConfig": {
+        "registry": "https://internal.cisl.rpi.edu/npm/"
+    }
+}
