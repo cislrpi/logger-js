@@ -40,7 +40,7 @@ Logger.prototype.write = function(type, message, level) {
   if (typeof message == 'object')
     message = JSON.stringify(message, null, 2);
 
-  var xpr = `[${moment().format('YYYY-MM-DD hh:mm:ss.SS')}] ${message}`;
+  var xpr = '[' + moment().format('YYYY-MM-DD hh:mm:ss.SS') + '] '+ message;
 
   if (
     o.console && 
@@ -93,7 +93,7 @@ var warned = false;
 
 var warn = function(name) {
   if (warned) return;
-  console.warn(`Warning: "${name}" has been deprecated, please use "new Logger()".`)
+  console.warn('Warning: "' + name + '" has been deprecated, please use "new Logger()".')
   warned = true;
 }
 Logger.setLogLevel = function(level) {
@@ -103,7 +103,7 @@ Logger.setLogLevel = function(level) {
 Logger.logExpression = function (xpr, level) {
   if (level > logLevel) return;
   xpr = (typeof xpr == 'object') ? JSON.stringify(xpr, null, 2) : xpr;
-  console.log(`[${moment().format('YYYY-MM-DD hh:mm:ss.SS')}] ${xpr}`);
+  console.log('[' + moment().format('YYYY-MM-DD hh:mm:ss.SS') + '] ' + xpr);
 }
 Logger.insertZeroes = function (num, len) {
   warn('insertZeroes');
