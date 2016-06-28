@@ -16,7 +16,7 @@ function Logger(o) {
     this.logFile = fs.createWriteStream(opts.file, { flags: 'a' });
 
   if (opts.db) {
-    mongodb.MongoClient.connect(opts.db.url, (err, db) => {
+    mongodb.MongoClient.connect(opts.db.url, function(err, db) {
       if (err) {
         logger.emit('db_error', err);
         console.error('Error connecting to mongodb database: ' + opts.db.url);
@@ -70,7 +70,7 @@ Logger.prototype.writeDb = function(type, message) {
   if (logger.dbColumn)
      logger.dbColumn.insert(entry);
   else
-    this.once('db_connection', () => {
+    this.once('db_connection', function() {
       logger.dbColumn.insert(entry);
     });
 }
@@ -91,21 +91,21 @@ Logger.prototype.warn = function(message, level) {
 var logLevel = 1;
 var warned = false;
 
-var warn = (name) => {
+var warn = function(name) {
   if (warned) return;
   console.warn(`Warning: "${name}" has been deprecated, please use "new Logger()".`)
   warned = true;
 }
-Logger.setLogLevel = (level) => {
+Logger.setLogLevel = function(level) {
   warn('setLogLevel');
   logLevel = level;
 }
-Logger.logExpression = (xpr, level) => {
+Logger.logExpression = function (xpr, level) {
   if (level > logLevel) return;
   xpr = (typeof xpr == 'object') ? JSON.stringify(xpr, null, 2) : xpr;
   console.log(`[${moment().format('YYYY-MM-DD hh:mm:ss.SS')}] ${xpr}`);
 }
-Logger.insertZeroes = (num, len) => {
+Logger.insertZeroes = function (num, len) {
   warn('insertZeroes');
   return Array(num).join('0') + text;
 }
