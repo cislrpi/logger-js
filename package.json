@@ -1,5 +1,5 @@
 {
-    "name": "logger",
+    "name": "@cel/logger",
     "version": "1.0.0",
     "description": "Logging function that prints time-stamped strings or JSON objects to the console.",
     "main": "logger.js",
