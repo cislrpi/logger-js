@@ -34,7 +34,7 @@ Logger.prototype.write = function(type, message, level) {
   var o = this.opts;
   if (
     (o.min !== undefined && level < o.min) || 
-    (o.ax != undefined && level > o.max)
+    (o.max != undefined && level > o.max)
   ) return;
 
   if (typeof message == 'object')
