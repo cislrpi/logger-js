@@ -8,6 +8,24 @@ const config_file = path.resolve('cog.json');
 let transports = [];
 let level = 'info';
 
+let winston_timestamp = winston.format.timestamp({
+  format: 'YYYY-MM-DD hh:mm:ss.SS'
+});
+let winston_printf = winston.format.printf(info => {
+  if (typeof info.message === 'object') {
+    info.message = '[object Object]\n' + JSON.stringify(info.message, null, 2);
+  }
+  return `[${info.timestamp}] ${info.level}: ${info.message}`;
+});
+
+let default_format = winston.format.combine(winston_timestamp, winston_printf);
+
+let colorized_format = winston.format.combine(
+  winston.format.colorize(),
+  winston_timestamp,
+  winston_printf
+);
+
 if (fs.existsSync(config_file)) {
   let config;
   try {
@@ -38,12 +56,12 @@ if (fs.existsSync(config_file)) {
     }
     // Unless explicitly asked not to, log to console
     if (config.logging.console !== false) {
-      transports.push(new winston.transports.Console());
+      transports.push(new winston.transports.Console({format: colorized_format}));
     }
     if (config.logging.file && typeof config.logging.file === 'string') {
       // resolve to an absolute path for logging
       config.logging.file = path.resolve(config.logging.file);
-      if (!path.existsSync(path.dirname(config.logging.file))) {
+      if (!fs.existsSync(path.dirname(config.logging.file))) {
         // Recursively attempt to create directories as necessary for logging
         path.dirname(config.logging.file)
           .split(path.sep)
@@ -68,18 +86,7 @@ else {
 
 const logger = winston.createLogger({
   level: level,
-  format: winston.format.combine(
-    winston.format.colorize(),
-    winston.format.timestamp({
-      format: 'YYYY-MM-DD hh:mm:ss.SS'
-    }),
-    winston.format.printf(info => {
-      if (typeof info.message === 'object') {
-        info.message = '[object Object]\n' + JSON.stringify(info.message, null, 2);
-      }
-      return `[${info.timestamp}] ${info.level}: ${info.message}`;
-    })
-  ),
+  format: default_format,
   transports: transports
 });
 
