@@ -2,6 +2,7 @@
     "name": "@cisl/logger",
     "version": "1.0.0",
     "description": "Logging function that prints time-stamped strings or JSON objects to the console.",
+    "license": "MIT",
     "main": "logger.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
