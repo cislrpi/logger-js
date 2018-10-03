@@ -29,10 +29,9 @@ logger.logExpression('some error', 0);
 Configuration
 =============
 As stated above, the logger uses the `cog.json` file in the current working 
-directory to set itself up. By default, the logger will
-always log to console and be set to a level of `info`. This can be tuned, as well
-as adding additional transports, by adding a `logging` block to the `cog.json`,
-using the following keys:
+directory to configure itself. By default, the logger will always log to console
+and be set to a level of `info`. This can be tuned, as well as adding additional
+transports, by adding a `logging` block to the `cog.json`, using the following keys:
 ```
 {
   logging: {
@@ -43,6 +42,9 @@ using the following keys:
   }
 }
 ```
+
+If no `cog.json` exists, then it uses a default of log level `info` and uses the
+console.
 
 Function Signatures
 ===================

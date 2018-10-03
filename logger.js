@@ -1,12 +1,11 @@
 const fs = require('fs');
+const path = require('path');
 const winston = require('winston');
 
 const log_levels = ['error', 'warn', 'info', 'debug'];
-
-const config_file = 'cog.json';
+const config_file = path.resolve('cog.json');
 
 let transports = [];
-
 let level = 'info';
 
 if (fs.existsSync(config_file)) {
@@ -38,12 +37,29 @@ if (fs.existsSync(config_file)) {
       transports.push(new winston.transports.Console());
     }
     if (config.logging.file && typeof config.logging.file === 'string') {
+      // resolve to an absolute path for logging
+      config.logging.file = path.resolve(config.logging.file);
+      if (!path.existsSync(path.dirname(config.logging.file))) {
+        // Recursively attempt to create directories as necessary for logging
+        path.dirname(config.logging.file)
+          .split(path.sep)
+          .reduce((currentPath, folder) => {
+            currentPath += folder + path.sep;
+            if (!fs.existsSync(currentPath)) {
+              fs.mkdirSync(currentPath);
+            }
+            return currentPath;
+          }, '');
+      }
       transports.push(new winston.transports.File({filename: config.logging.file}));
     }
     if (config.logging.db) {
       transports.push(new winston.transports.MongoDB());
     }
   }
+}
+else {
+  transports.push(new winston.transports.Console());
 }
 
 const logger = winston.createLogger({
