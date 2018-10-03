@@ -28,6 +28,10 @@ if (fs.existsSync(config_file)) {
     };
   }
 
+  if (config.log) {
+    config.logging.file = config.log;
+  }
+
   if (config.logging) {
     if (config.logging.level) {
       level = config.logging.level;
