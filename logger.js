@@ -1,113 +1,92 @@
-const
-  fs = require('fs'),
-  _ = require('lodash'),
-  moment = require('moment'),
-  mongodb = require('mongodb'),
-  assert = require('assert'),
-  EventEmitter = require('events').EventEmitter;
+const fs = require('fs');
+const winston = require('winston');
 
-var defaults = {};
+const log_levels = ['error', 'warn', 'info', 'debug'];
 
-function Logger(o) {
-  var logger = this;
-  var opts = this.opts = _.extend({}, defaults, o);
+const config_file = 'cog.json';
 
-  if (opts.file)
-    this.logFile = fs.createWriteStream(opts.file, { flags: 'a' });
+let transports = [];
 
-  if (opts.db) {
-    mongodb.MongoClient.connect(opts.db.url, function(err, db) {
-      if (err) {
-        logger.emit('db_error', err);
-        console.error('Error connecting to mongodb database: ' + opts.db.url);
-        return;
+let level = 'info';
+
+if (fs.existsSync(config_file)) {
+  let config;
+  try {
+    config = JSON.parse(fs.readFileSync(config_file, {encoding: 'ascii'}));
+  }
+  catch (e) {
+    console.error('Error: could not parse cog.json file');
+    console.error(e);
+    process.exit(-1);
+  }
+
+  config = config || {};
+
+  if (config.logging === undefined) {
+    config.logging = {
+      level: 'info',
+      console: true
+    };
+  }
+
+  if (config.logging) {
+    if (config.logging.level) {
+      level = config.logging.level;
+    }
+    // Unless explicitly asked not to, log to console
+    if (config.logging.console !== false) {
+      transports.push(new winston.transports.Console());
+    }
+    if (config.logging.file && typeof config.logging.file === 'string') {
+      transports.push(new winston.transports.File({filename: config.logging.file}));
+    }
+    if (config.logging.db) {
+      transports.push(new winston.transports.MongoDB());
+    }
+  }
+}
+
+const logger = winston.createLogger({
+  level: level,
+  format: winston.format.combine(
+    winston.format.colorize(),
+    winston.format.timestamp({
+      format: 'YYYY-MM-DD hh:mm:ss.SS'
+    }),
+    winston.format.printf(info => {
+      if (typeof info.message === 'object') {
+        info.message = '[object Object]\n' + JSON.stringify(info.message, null, 2);
       }
-      logger.dbColumn = db.collection('log');
-      logger.emit('db_connection', db);
-    });
+      return `[${info.timestamp}] ${info.level}: ${info.message}`;
+    })
+  ),
+  transports: transports
+});
+
+/**
+ * Set the log level for the logger.
+ * @param {number|string} level Level to set logger at
+ * @return {void}
+ */
+logger.setLogLevel = (level) => {
+  logger.warn('setLogLevel');
+  if (typeof level === 'number' && level >= 0 && level < log_levels.length) {
+    level = log_levels[level];
   }
-}
+  logger.level = level.toLowerCase();
+};
 
-Logger.prototype.__proto__ = EventEmitter.prototype;
-
-Logger.prototype.write = function(type, message, level) {
-  var o = this.opts;
-  if (
-    (o.min !== undefined && level < o.min) || 
-    (o.max != undefined && level > o.max)
-  ) return;
-
-  if (typeof message == 'object')
-    message = JSON.stringify(message, null, 2);
-
-  var xpr = '[' + moment().format('YYYY-MM-DD hh:mm:ss.SS') + '] '+ message;
-
-  if (
-    o.console && 
-    !(o.consoleMin !== undefined && level < o.consoleMin) &&
-    !(o.consoleMax !== undefined && level > o.consoleMax)
-  ) console.log(xpr);
-
-  if (
-    o.file && 
-    !(o.fileMin !== undefined && level < o.fileMin) &&
-    !(o.fileMax !== undefined && level > o.fileMax)
-  ) this.logFile.write(xpr + '\n');
-
-  if (
-    o.db && 
-    !(o.dbMin !== undefined && level < o.dbMin) &&
-    !(o.dbMax !== undefined && level > o.dbMax)
-  ) this.writeDb(type, message, level);
-}
-
-Logger.prototype.writeDb = function(type, message) {
-  var logger = this;
-  var entry = {
-    message: message,
-    type: type
+/**
+ * Write a message to the log given some level
+ * @param {string} msg Message to log
+ * @param {number|string} level  Level to log message at
+ * @return {void}
+ */
+logger.logExpression = (msg, level) => {
+  if (typeof level === 'number') {
+    level = log_levels[level];
   }
-  if (logger.dbColumn)
-     logger.dbColumn.insert(entry);
-  else
-    this.once('db_connection', function() {
-      logger.dbColumn.insert(entry);
-    });
-}
+  logger[level.toLowerCase()](msg);
+};
 
-Logger.prototype.log = function(message, level) {
-  this.write('log', message, level);
-}
-
-Logger.prototype.info = function(message, level) {
-  this.write('info', message, level);
-}
-
-Logger.prototype.warn = function(message, level) {
-  this.write('warn', message, level);
-}
-
-// Backwards compatibility + warning
-var logLevel = 1;
-var warned = false;
-
-var warn = function(name) {
-  if (warned) return;
-  console.warn('Warning: "' + name + '" has been deprecated, please use "new Logger()".')
-  warned = true;
-}
-Logger.setLogLevel = function(level) {
-  warn('setLogLevel');
-  logLevel = level;
-}
-Logger.logExpression = function (xpr, level) {
-  if (level > logLevel) return;
-  xpr = (typeof xpr == 'object') ? JSON.stringify(xpr, null, 2) : xpr;
-  console.log('[' + moment().format('YYYY-MM-DD hh:mm:ss.SS') + '] ' + xpr);
-}
-Logger.insertZeroes = function (num, len) {
-  warn('insertZeroes');
-  return Array(num).join('0') + text;
-}
-
-module.exports = Logger;
+module.exports = logger;

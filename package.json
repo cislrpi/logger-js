@@ -1,22 +1,24 @@
 {
-    "name": "@cel/logger",
+    "name": "@cisl/logger",
     "version": "1.0.0",
     "description": "Logging function that prints time-stamped strings or JSON objects to the console.",
     "main": "logger.js",
-    "repository": {
-        "type": "git",
-        "url": "http://174.37.217.189/gitlab/infrastructure/logger.git"
-    },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "contributors": "Jeff Kephart",
+    "author": {
+        "name": "Matthew Peveler",
+        "email": "pevelm@rpi.edu"
+    },
     "dependencies": {
-        "lodash": "^4.13.1",
-        "moment": "^2.13.0",
-        "mongodb": "^2.1.18"
+        "winston": "^3.1.0",
+        "winston-mongodb": "^4.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://internal.cisl.rpi.edu/code/libraries/CELIO"
     },
     "publishConfig": {
-        "registry": "https://cel-npm-registry.mybluemix.net/"
+        "registry": "https://internal.cisl.rpi.edu/npm/"
     }
 }
