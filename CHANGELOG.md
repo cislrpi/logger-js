@@ -1,0 +1,9 @@
+# Changelog
+
+## v1.1.0
+* Remove the date from the logging timestamp by default
+* Allow customization of logging timestamp format through cog.json
+* Upgrade winston 3.1.0 to 3.2.1
+
+## v1.0.0
+* Initial release
