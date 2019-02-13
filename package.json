@@ -1,6 +1,6 @@
 {
     "name": "@cisl/logger",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Logging function that prints time-stamped strings or JSON objects to the console.",
     "license": "MIT",
     "main": "logger.js",
@@ -12,8 +12,8 @@
         "email": "pevelm@rpi.edu"
     },
     "dependencies": {
-        "winston": "^3.1.0",
-        "winston-mongodb": "^4.0.0"
+        "winston": "^3.2.1",
+        "winston-mongodb": "^4.0.3"
     },
     "repository": {
         "type": "git",
