@@ -12,7 +12,7 @@ let config;
 
 if (fs.existsSync(config_file)) {
   try {
-    config = JSON.parse(fs.readFileSync(config_file, {encoding: 'ascii'}));
+    config = JSON.parse(fs.readFileSync(config_file, {encoding: 'utf-8'}));
   }
   catch (e) {
     console.error('Error: could not parse cog.json file');
