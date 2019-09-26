@@ -3,8 +3,11 @@
     "version": "1.1.1",
     "description": "Logging function that prints time-stamped strings or JSON objects to the console.",
     "license": "MIT",
-    "main": "logger.js",
+    "main": "dist/logger.js",
+    "types": "dist/logger.d.ts",
     "scripts": {
+        "build": "tsc",
+        "watch": "tsc -w",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": {
@@ -13,7 +16,7 @@
     },
     "dependencies": {
         "winston": "^3.2.1",
-        "winston-mongodb": "^4.0.3"
+        "winston-mongodb": "^5.0.0"
     },
     "repository": {
         "type": "git",
@@ -21,5 +24,12 @@
     },
     "publishConfig": {
         "registry": "https://internal.cisl.rpi.edu/npm/"
+    },
+    "devDependencies": {
+        "@types/node": "^12.0.10",
+        "@typescript-eslint/eslint-plugin": "^1.9.0",
+        "@typescript-eslint/parser": "^1.9.0",
+        "eslint": "^5.16.0",
+        "typescript": "^3.5.2"
     }
 }
