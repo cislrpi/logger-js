@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.0
+* Upgrade winston-mongodb from 4.0.3 to 5.0.0
+* Migrate code to TypeScript
+
 ## v1.1.0
 * Remove the date from the logging timestamp by default
 * Allow customization of logging timestamp format through cog.json
