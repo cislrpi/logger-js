@@ -1,16 +1,19 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
-  /*parserOptions: {
+  parserOptions: {
     project:'./tsconfig.json'
-  },*/
+  },
   plugins: ['@typescript-eslint'],
-  extends: ['plugin:@typescript-eslint/recommended'],
+  extends: [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
   rules: {
     "indent": "off",
-    "semi": "error",
+    "@typescript-eslint/brace-style": ["error", "stroustrup"],
     "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/indent": ["error", 2],
-    "@typescript-eslint/no-explicit-any": "off"
-    // not yet released - "@typescript-eslint/semi": ["error"]
+    "@typescript-eslint/semi": ["error"]
   }
 }

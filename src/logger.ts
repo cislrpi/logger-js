@@ -1,10 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import winston from 'winston';
-import { MongoDB } from 'winston-mongodb';
+let MongoDB;
 
-declare module 'winston-mongodb' {
-  const MongoDB: MongoDBTransportInstance;
+try {
+  MongoDB = require('winston-mongodb').MongoDB;
+}
+catch (ex) {
+  MongoDB = false;
 }
 
 const log_levels = ['error', 'warn', 'info', 'debug'];
@@ -21,53 +24,45 @@ declare module 'winston' {
 
 interface Logging {
   level: string;
-  console: undefined | boolean;
-  file: undefined | string;
-  db: undefined | boolean;
+  console: boolean;
+  file?: string;
+  mongo?: string;
   timestamp_format: string;
 }
 
 interface Config {
-  log: undefined | string;
-  logging: undefined | Logging;
+  logging: Logging;
 }
 
-let config: Config;
-
-let config_obj: object | undefined;
+const config: Config = {
+  logging: {
+    level: 'info',
+    console: true,
+    timestamp_format: 'hh:mm:ss.SS'
+  }
+};
 
 if (fs.existsSync(config_file)) {
   try {
-    config_obj = JSON.parse(fs.readFileSync(config_file, {encoding: 'utf-8'}));
+    const config_obj = JSON.parse(fs.readFileSync(config_file, {encoding: 'utf-8'}));
+    if (!config_obj.logging) {
+      config_obj.logging = {};
+    }
+    if (config_obj.log) {
+      config_obj.logging.file = config_obj.log;
+    }
+    if (config_obj.logging) {
+      config.logging = Object.assign(
+        config.logging,
+        config_obj.logging
+      );
+    }
   }
   catch (e) {
     console.error('Error: could not parse cog.json file');
     console.error(e);
     process.exit(-1);
   }
-}
-
-if (config_obj) {
-  config = config_obj as Config;
-}
-else {
-  config = {
-    log: undefined,
-    logging: undefined
-  };
-}
-
-// If we haven't defined anything in the config file, assume
-// we want to log info+, to the console, and format is just
-// timestamp with no date (YYYY-MM-DD).
-if (config.logging === undefined) {
-  config.logging = {
-    level: 'info',
-    console: true,
-    file: undefined,
-    db: undefined,
-    timestamp_format: 'hh:mm:ss.SS'
-  };
 }
 
 const winston_timestamp = winston.format.timestamp({
@@ -87,54 +82,56 @@ const colorized_format = winston.format.combine(
   winston_printf
 );
 
-// Shim to support old format
-if (config.log) {
-  config.logging.file = config.log;
-}
-
 const logger = winston.createLogger({
   level: level,
   format: default_format,
   transports: []
 });
 
-if (config.logging) {
-  if (config.logging.level) {
-    level = config.logging.level;
+if (config.logging.level) {
+  level = config.logging.level;
+}
+// Unless explicitly asked not to, log to console
+if (config.logging.console !== false) {
+  logger.add(new winston.transports.Console({format: colorized_format}));
+}
+
+if (config.logging.file && typeof config.logging.file === 'string') {
+  // resolve to an absolute path for logging
+  config.logging.file = path.resolve(config.logging.file);
+  if (!fs.existsSync(path.dirname(config.logging.file))) {
+    // Recursively attempt to create directories as necessary for logging
+    path.dirname(config.logging.file)
+      .split(path.sep)
+      .reduce((currentPath, folder): string => {
+        currentPath += folder + path.sep;
+        if (!fs.existsSync(currentPath)) {
+          fs.mkdirSync(currentPath);
+        }
+        return currentPath;
+      }, '');
   }
-  // Unless explicitly asked not to, log to console
-  if (config.logging.console !== false) {
-    logger.transports.push(new winston.transports.Console({format: colorized_format}));
+  logger.add(new winston.transports.File({filename: config.logging.file}));
+}
+if (config.logging.mongo) {
+  if (!MongoDB) {
+    console.error('Error: could not load winston-mongodb. Is this installed as a dependency?');
+    process.exit();
   }
-  if (config.logging.file && typeof config.logging.file === 'string') {
-    // resolve to an absolute path for logging
-    config.logging.file = path.resolve(config.logging.file);
-    if (!fs.existsSync(path.dirname(config.logging.file))) {
-      // Recursively attempt to create directories as necessary for logging
-      path.dirname(config.logging.file)
-        .split(path.sep)
-        .reduce((currentPath, folder): string => {
-          currentPath += folder + path.sep;
-          if (!fs.existsSync(currentPath)) {
-            fs.mkdirSync(currentPath);
-          }
-          return currentPath;
-        }, '');
+  logger.add(new MongoDB({
+    db: config.logging.mongo,
+    options: {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
     }
-    logger.transports.push(new winston.transports.File({filename: config.logging.file}));
-  }
-  if (config.logging.db) {
-    logger.transports.push(new MongoDB());
-  }
+  }));
 }
 
 /**
  * Set the log level for the logger.
- * @param {number|string} level Level to set logger at
- * @return {void}
+ * @param level Level to set logger at
  */
 logger.setLogLevel = (level: number | string): void => {
-  logger.warn('setLogLevel');
   let str_level: string;
   if (typeof level === 'number') {
     if (level < 0 || level >= log_levels.length) {
@@ -146,6 +143,7 @@ logger.setLogLevel = (level: number | string): void => {
     str_level = level;
   }
 
+  logger.warn(`setLogLevel: ${str_level.toUpperCase()}`);
   logger.level = str_level.toLowerCase();
 };
 
@@ -155,13 +153,12 @@ function isLogLevel(level: string): level is "debug" | "info" | "warn" | "error"
 
 /**
  * Write a message to the log given some level
- * @param {string} msg Message to log
- * @param {number|string} level  Level to log message at
- * @return {void}
+ * @param msg Message to log
+ * @param level  Level to log message at
  */
 logger.logExpression = (msg: string, level: number | string): void => {
-  let str_level: string = (typeof level === 'number') ? log_levels[level] : level.toLowerCase();
-  
+  const str_level = (typeof level === 'number') ? log_levels[level] : level.toLowerCase();
+
   if (isLogLevel(str_level)) {
     logger[str_level](msg);
   }

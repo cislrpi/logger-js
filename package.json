@@ -1,35 +1,37 @@
 {
-    "name": "@cisl/logger",
-    "version": "1.1.1",
-    "description": "Logging function that prints time-stamped strings or JSON objects to the console.",
-    "license": "MIT",
-    "main": "dist/logger.js",
-    "types": "dist/logger.d.ts",
-    "scripts": {
-        "build": "tsc",
-        "watch": "tsc -w",
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": {
-        "name": "Matthew Peveler",
-        "email": "pevelm@rpi.edu"
-    },
-    "dependencies": {
-        "@types/node": "^12.7.8",
-        "winston": "^3.2.1",
-        "winston-mongodb": "^5.0.0"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://internal.cisl.rpi.edu/code/libraries/CELIO"
-    },
-    "publishConfig": {
-        "registry": "https://internal.cisl.rpi.edu/npm/"
-    },
-    "devDependencies": {
-        "@typescript-eslint/eslint-plugin": "^2.3.1",
-        "@typescript-eslint/parser": "^2.3.1",
-        "eslint": "^6.4.0",
-        "typescript": "^3.6.3"
-    }
+  "name": "@cisl/logger",
+  "version": "1.2.0",
+  "description": "Logging function that prints time-stamped strings or JSON objects to the console.",
+  "license": "MIT",
+  "main": "dist/logger.js",
+  "types": "dist/logger.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "eslint src/*",
+    "prepublishOnly": "echo \"Do not run publish directly, run tsc-publish\" && exit 1",
+    "tsc-publish": "tsc-publish"
+  },
+  "author": {
+    "name": "Matthew Peveler",
+    "email": "pevelm@rpi.edu"
+  },
+  "dependencies": {
+    "@types/node": "^12.7.8",
+    "winston": "^3.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://internal.cisl.rpi.edu/code/libraries/CELIO"
+  },
+  "publishConfig": {
+    "registry": "https://internal.cisl.rpi.edu/npm/"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.3.1",
+    "@typescript-eslint/parser": "^2.3.1",
+    "eslint": "^6.4.0",
+    "tsc-publish": "^0.2.1",
+    "typescript": "^3.6.3"
+  }
 }
