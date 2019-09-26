@@ -15,6 +15,7 @@
         "email": "pevelm@rpi.edu"
     },
     "dependencies": {
+        "@types/node": "^12.7.8",
         "winston": "^3.2.1",
         "winston-mongodb": "^5.0.0"
     },
@@ -26,10 +27,9 @@
         "registry": "https://internal.cisl.rpi.edu/npm/"
     },
     "devDependencies": {
-        "@types/node": "^12.0.10",
-        "@typescript-eslint/eslint-plugin": "^1.9.0",
-        "@typescript-eslint/parser": "^1.9.0",
-        "eslint": "^5.16.0",
-        "typescript": "^3.5.2"
+        "@typescript-eslint/eslint-plugin": "^2.3.1",
+        "@typescript-eslint/parser": "^2.3.1",
+        "eslint": "^6.4.0",
+        "typescript": "^3.6.3"
     }
 }
