@@ -14,7 +14,7 @@ npm install @cisl/logger
 
 Usage
 =====
-```
+```javascript
 const logger = require('@cisl/logger');
 logger.debug('debug');
 logger.verbose(1);
@@ -26,9 +26,19 @@ logger.logExpression('some message', 'info');
 logger.logExpression('some error', 0);
 ```
 
+Note: For logging throw exceptions, you should either cast it to a string (e.g.
+```logger.info(`${new Error('test')}`))```) or pass specific parts of the
+exception as strings:
+```javascript
+const err = new Error('test');
+logger.error(err.message);
+logger.error(err.stack);
+```
+Attempting to log the Error object as-is will end up with just logging `undefined`.
+
 Configuration
 =============
-As stated above, the logger uses the `cog.json` file in the current working 
+As stated above, the logger uses the `cog.json` file in the current working
 directory to configure itself. By default, the logger will always log to console
 and be set to a level of `info`. This can be tuned, as well as adding additional
 transports, by adding a `logging` block to the `cog.json`, using the following keys:
@@ -48,14 +58,14 @@ console.
 
 Function Signatures
 ===================
-* error(msg: any?)
-* warn(msg: any?)
-* info(msg: any?)
-* verbose(msg: any?)
-* debug(msg: any?)
-* silly(msg: any?)
-* setLogLevel(level: string|number)
-* logExpression(msg: any?, level: string|number)
+* error(msg: string | object): void
+* warn(msg: string | object): void
+* info(msg: string | object): void
+* verbose(msg: string | object): void
+* debug(msg: string | object): void
+* silly(msg: string | object): void
+* setLogLevel(level: string | number): void
+* logExpression(msg: string | object, level: string | number)
 
 Where `msg` is the message to log and then `level` is a specific log level to use (see below).
 
