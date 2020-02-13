@@ -11,9 +11,7 @@ catch (ex) {
 }
 
 const log_levels = ['error', 'warn', 'info', 'debug'];
-const config_file = path.resolve('cog.json');
-
-let level = 'info';
+const config_file = path.resolve(path.join(process.cwd(), 'cog.json'));
 
 declare module 'winston' {
   interface Logger {
@@ -83,14 +81,11 @@ const colorized_format = winston.format.combine(
 );
 
 const logger = winston.createLogger({
-  level: level,
+  level: config.logging.level,
   format: default_format,
   transports: []
 });
 
-if (config.logging.level) {
-  level = config.logging.level;
-}
 // Unless explicitly asked not to, log to console
 if (config.logging.console !== false) {
   logger.add(new winston.transports.Console({format: colorized_format}));
