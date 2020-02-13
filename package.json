@@ -1,6 +1,6 @@
 {
   "name": "@cisl/logger",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Logging function that prints time-stamped strings or JSON objects to the console.",
   "license": "MIT",
   "main": "dist/logger.js",
@@ -10,7 +10,8 @@
     "watch": "tsc -w",
     "lint": "eslint src/*",
     "prepublishOnly": "echo \"Do not run publish directly, run tsc-publish\" && exit 1",
-    "tsc-publish": "tsc-publish"
+    "tsc-publish": "tsc-publish",
+    "dry-tsc-publish": "tsc-publish --dry-run"
   },
   "author": {
     "name": "Matthew Peveler",
@@ -25,7 +26,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://internal.cisl.rpi.edu/code/libraries/CELIO"
+    "url": "https://github.com/cislrpi/logger-js"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.19.2",
