@@ -63,6 +63,10 @@ if (fs.existsSync(config_file)) {
   }
 }
 
+if (!log_levels.includes(config.logging.level)) {
+  config.logging.level = 'info';
+}
+
 const winston_timestamp = winston.format.timestamp({
   format: config.logging.timestamp_format
 });
