@@ -17,21 +17,21 @@
     "email": "pevelm@rpi.edu"
   },
   "dependencies": {
-    "@types/node": "^12.7.8",
+    "@types/node": "^8.10.59",
     "winston": "^3.2.1"
+  },
+  "engines": {
+    "node": ">=8"
   },
   "repository": {
     "type": "git",
     "url": "https://internal.cisl.rpi.edu/code/libraries/CELIO"
   },
-  "publishConfig": {
-    "registry": "https://internal.cisl.rpi.edu/npm/"
-  },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.3.1",
-    "@typescript-eslint/parser": "^2.3.1",
-    "eslint": "^6.4.0",
-    "tsc-publish": "^0.2.1",
-    "typescript": "^3.6.3"
+    "@typescript-eslint/eslint-plugin": "^2.19.2",
+    "@typescript-eslint/parser": "^2.19.2",
+    "eslint": "^6.8.0",
+    "tsc-publish": "^0.5.2",
+    "typescript": "^3.7.5"
   }
 }
