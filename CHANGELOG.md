@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.2.2
+
+* Migrate to Github actions pipelines
+* Do not build and distribute declaration map file
+
 ## v1.2.1
 
 * Fix setting initial log level in cog.json

@@ -58,7 +58,7 @@ transports, by adding a `logging` block to the `cog.json`, using the following k
 If no `cog.json` exists, then it uses a default of log level `info` and uses the
 console.
 
-# Function Signatures
+## Function Signatures
 
 * error(msg: string | object): void
 * warn(msg: string | object): void

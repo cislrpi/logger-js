@@ -1,6 +1,6 @@
 {
   "name": "@cisl/logger",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Logging function that prints time-stamped strings or JSON objects to the console.",
   "license": "MIT",
   "main": "dist/logger.js",
@@ -34,5 +34,8 @@
     "eslint": "^6.8.0",
     "tsc-publish": "^0.5.2",
     "typescript": "^3.7.5"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
